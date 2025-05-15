@@ -10,7 +10,6 @@ SafeVault is a web-based application designed to provide secure storage and mana
 - Created the root solution file: `safe-vault-application.sln`.
 - Added the `SafeVault.Web` project to the solution, providing the main web application structure.
 - Added the `SafeVault.Test` project to the solution, enabling unit testing with xUnit.
-- Set up a sample unit test (`UnitTest1.cs`) in the test project.
 - Configured the web project with basic middleware and routing in `Program.cs`.
 - Replaced the default Index page with a custom web form for username and email submission in `Index.cshtml`.
 - Added a LocalDB connection string to `appsettings.json` for database connectivity.
@@ -28,7 +27,7 @@ SafeVault is a web-based application designed to provide secure storage and mana
 - Added a standard `.gitignore` file to exclude build outputs, user files, logs, test results, IDE settings, and other common files from version control.
 
 ## Activity 2: Changes and Updates
-// Add new changes here as the project evolves.
+- Added a new Razor Page `AdminTools` (AdminTools.cshtml and AdminTools.cshtml.cs) for administrative tools, allowing management of users, logs, and other admin tasks.
 
 ## How AI Has Contributed
 - Guided the setup of the solution and projects using best practices for .NET and ASP.NET Core.
