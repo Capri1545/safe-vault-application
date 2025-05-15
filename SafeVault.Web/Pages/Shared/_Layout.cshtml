@@ -26,8 +26,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="loginMenu">
                             <a class="nav-link text-dark" asp-page="/Login">Login</a>
+                        </li>
+                        <li class="nav-item" id="logoutMenu" style="display:none;">
+                            <a class="nav-link text-dark" href="#" onclick="logout();return false;">Log out</a>
+                        </li>
+                        <li class="nav-item" id="adminToolsMenu" style="display:none;">
+                            <a class="nav-link text-dark" asp-page="/AdminTools">Admin Tools</a>
                         </li>
                     </ul>
                 </div>
@@ -49,7 +55,48 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
+    <script>
+        // Show/hide menu items based on JWT
+        function parseJwt (token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) { return {}; }
+        }
+        function updateMenuForAuth() {
+            const jwt = localStorage.getItem('jwtToken');
+            let isAdmin = false;
+            if (jwt) {
+                document.getElementById('loginMenu').style.display = 'none';
+                document.getElementById('logoutMenu').style.display = '';
+                const payload = parseJwt(jwt);
+                // Try both standard and fallback claim URIs for role
+                const role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || payload["role"];
+                if (role === "Admin") {
+                    document.getElementById('adminToolsMenu').style.display = '';
+                    isAdmin = true;
+                } else {
+                    document.getElementById('adminToolsMenu').style.display = 'none';
+                }
+            } else {
+                document.getElementById('loginMenu').style.display = '';
+                document.getElementById('logoutMenu').style.display = 'none';
+                document.getElementById('adminToolsMenu').style.display = 'none';
+            }
+            return isAdmin;
+        }
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            updateMenuForAuth();
+            // Optionally reload to update page content
+            window.location.href = '/';
+        }
+        updateMenuForAuth();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

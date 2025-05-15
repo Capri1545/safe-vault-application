@@ -1,13 +1,41 @@
 ﻿@page
+@using SafeVault.Web.Pages
 @model IndexModel
 
-<!-- webform.html -->
-<form action="/submit" method="post">
+<div id="homeContent"></div>
+
+@section Scripts {
+    <script>
+        function isLoggedIn() {
+            return !!localStorage.getItem('jwtToken');
+        }
+        function renderHomeContent() {
+            const container = document.getElementById('homeContent');
+            if (!isLoggedIn()) {
+                container.innerHTML = '<h2>Welcome to Home Page</h2>';
+            } else {
+                container.innerHTML = `
+<form id="userForm">
     <label for="username">Username:</label>
     <input type="text" id="username" name="username">
-    
     <label for="email">Email:</label>
     <input type="email" id="email" name="email">
-    
     <button type="submit">Submit</button>
 </form>
+<div id="userFormResult"></div>
+`;
+                document.getElementById('userForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    document.getElementById('userFormResult').innerHTML = '<div class="alert alert-success">Submitted!</div>';
+                });
+            }
+        }
+        renderHomeContent();
+        // Re-render home content on login/logout
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'jwtToken') renderHomeContent();
+        });
+        // Also re-render after logout (menu update)
+        window.renderHomeContent = renderHomeContent;
+    </script>
+}

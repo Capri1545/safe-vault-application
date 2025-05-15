@@ -1,11 +1,11 @@
 # SafeVault Application
 
 ## Summary
-SafeVault is a secure application suite designed to provide web-based and API-based storage and management of sensitive data. The solution is built using ASP.NET Core Razor Pages for the web interface, a minimal API project for extensibility, and follows modern web development best practices. It includes robust input validation, security-focused unit testing, and administrative tools for management.
+SafeVault is a secure application suite for web-based and API-based management of sensitive data. The solution uses ASP.NET Core Razor Pages for the web UI and a minimal API for all data and authentication logic. It features robust input validation, JWT authentication, role-based access, and dynamic UI updates based on authentication state. All database logic is handled by the API, and the web project communicates securely with the API for all protected operations.
 
-- **SafeVault.Web**: The main web project, responsible for the user interface and input validation.
-- **SafeVault.Test**: A unit test project using NUnit to ensure code quality, security, and reliability.
-- **SafeVault.Api**: A minimal API project, responsible for all data/database logic and ready for secure API development and integration.
+- **SafeVault.Web**: User interface, input validation, and authentication state management.
+- **SafeVault.Api**: All data/database logic, authentication, authorization, and user/role management.
+- **SafeVault.Test**: Unit tests for input validation and security.
 
 ## Activity 1: Changes and Updates
 - Created the root solution file: `safe-vault-application.sln`.
@@ -26,27 +26,22 @@ SafeVault is a secure application suite designed to provide web-based and API-ba
 - Added a standard `.gitignore` file to exclude build outputs, user files, logs, test results, IDE settings, and other common files from version control.
 
 ## Activity 2: Changes and Updates
-- Added a new Razor Page `AdminTools` (AdminTools.cshtml and AdminTools.cshtml.cs) for administrative tools, allowing management of users, logs, and other admin tasks.
-- Added the SafeVault.Api project to the root solution for unified API and web development.
-- Cleaned up the SafeVault.Api project by removing all default code (weather, counter, etc.) and resetting configuration files to minimal/empty state for a bare minimum API setup.
-- Added authentication and authorization middleware to the SafeVault.Api project to enable robust access control and prevent unauthorized access to sensitive data.
-- Added an AuthController to the API project with a /api/auth/login endpoint that verifies user credentials during login (authentication). This is a placeholder for real authentication logic.
-- Restricted access to the administrative tools page by requiring the user to have the 'Admin' role using the [Authorize(Roles = "Admin")] attribute.
-- Added a new Login page (Login.cshtml and Login.cshtml.cs) to the web project, providing a UI for users to log in by calling the API's /api/auth/login endpoint and displaying validation results.
-- Added a Login link to the navigation menu for easy access.
-- Completed JWT authentication setup in `SafeVault.Api/Program.cs` using a symmetric security key and best practices for token validation.
-- Updated `AuthController` in the API to generate and return a JWT token on successful login, including username and role claims.
-- Added a sample protected endpoint (`/api/auth/protected`) that requires JWT authentication and returns the current user's name and role.
+- Added Razor Page `AdminTools` for admin-only management, with menu visibility based on JWT role.
+- Added SafeVault.Api project for all API and data logic, with JWT authentication and role-based authorization.
+- Cleaned up the API project, removing default templates and moving all DB logic from the web project to the API.
+- Implemented CORS in the API for secure cross-origin requests from the web project.
+- Added login/logout UI logic: menu updates dynamically, and credentials are cleared on logout.
+- Home page content now updates based on login state, showing a form only when logged in.
+- Added .http file for direct API endpoint testing for both admin and user roles.
+- Fixed JWT key size and claim parsing for robust authentication and admin detection.
 
 ## How AI Has Contributed
-- Guided the setup of the solution and projects using best practices for .NET and ASP.NET Core.
-- Provided step-by-step terminal commands for adding and configuring projects in the solution.
-- Generated boilerplate code for the test project and ensured it is correctly referenced in the solution.
-- Offered explanations and summaries for each step, improving project documentation and onboarding.
-- Automated the replacement of the Index page with a user-provided web form.
-- Added a LocalDB connection string to the configuration for database support.
-- Automated the creation of input validation and security-focused unit tests.
-- Automated the addition of a .gitignore file for best practices in source control.
+- Automated project structure setup and best-practice configuration for .NET, ASP.NET Core, and JWT security.
+- Generated and refactored code for input validation, authentication, and dynamic UI updates.
+- Provided step-by-step guidance for moving all data logic to the API and securing endpoints.
+- Automated the addition of CORS, controller mapping, and JWT role parsing for seamless integration.
+- Created and updated .http test files for API endpoint validation.
+- Ensured all documentation and code changes reflect the current, secure architecture.
 
 ---
 This README will be updated as the project evolves and new features or changes are introduced.

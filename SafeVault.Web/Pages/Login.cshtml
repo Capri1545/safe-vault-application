@@ -30,7 +30,7 @@
             resultDiv.innerHTML = '';
             try {
                 // Use relative path for API endpoint so it works with reverse proxy or when hosted together
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('http://localhost:5145/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -41,6 +41,9 @@
                     if (data.token) {
                         localStorage.setItem('jwtToken', data.token);
                         resultDiv.innerHTML = `<div class='alert alert-success'>Login successful. JWT stored.</div>`;
+                        // Update menu and redirect to home
+                        if (window.updateMenuForAuth) window.updateMenuForAuth();
+                        setTimeout(() => window.location.href = '/', 800);
                     } else {
                         resultDiv.innerHTML = `<div class='alert alert-warning'>Login succeeded, but no token returned.</div>`;
                     }
