@@ -24,7 +24,12 @@ dbInitializer.Initialize();
 // Add services to the container.
 builder.Services.AddAuthorization();
 builder
-    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -39,8 +44,9 @@ builder
         };
     });
 
-// Add controllers support
+// Add controllers and Razor Pages support
 builder.Services.AddControllers();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -52,11 +58,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(); // Moved before authentication/authorization
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors();
 
-// Map controller endpoints
+// Map controller and Razor Pages endpoints
 app.MapControllers();
+app.MapRazorPages();
 
 app.Run();

@@ -95,6 +95,13 @@
             // Optionally reload to update page content
             window.location.href = '/';
         }
+        // Only destroy JWT on full tab/window close, not on reload or navigation
+        window.addEventListener('pagehide', function(e) {
+            if (e.persisted === false) {
+                // Only remove JWT if the page is being closed, not just navigated away
+                localStorage.removeItem('jwtToken');
+            }
+        });
         updateMenuForAuth();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
