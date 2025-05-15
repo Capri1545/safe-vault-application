@@ -20,13 +20,30 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public IActionResult Login([FromBody] LoginRequest request)
     {
+        // Basic input validation
+        if (
+            string.IsNullOrWhiteSpace(request.Username)
+            || string.IsNullOrWhiteSpace(request.Password)
+        )
+        {
+            return BadRequest(new { Message = "Username and password are required." });
+        }
+
+        // Simulate user lookup and password verification
         if (
             Users.TryGetValue(request.Username, out var storedPassword)
             && storedPassword == request.Password
         )
         {
-            // In production, return a JWT or secure token
-            return Ok(new { Message = "Login successful" });
+            // In production, return a JWT or secure token and set user roles/claims
+            return Ok(
+                new
+                {
+                    Message = "Login successful",
+                    Username = request.Username,
+                    Role = request.Username == "admin" ? "Admin" : "User",
+                }
+            );
         }
         return Unauthorized(new { Message = "Invalid username or password" });
     }

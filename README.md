@@ -34,6 +34,8 @@ SafeVault is a secure application suite designed to provide web-based and API-ba
 - Added authentication and authorization middleware to the SafeVault.Api project to enable robust access control and prevent unauthorized access to sensitive data.
 - Added an AuthController to the API project with a /api/auth/login endpoint that verifies user credentials during login (authentication). This is a placeholder for real authentication logic.
 - Restricted access to the administrative tools page by requiring the user to have the 'Admin' role using the [Authorize(Roles = "Admin")] attribute.
+- Added a new Login page (Login.cshtml and Login.cshtml.cs) to the web project, providing a UI for users to log in by calling the API's /api/auth/login endpoint and displaying validation results.
+- Added a Login link to the navigation menu for easy access.
 
 ## How AI Has Contributed
 - Guided the setup of the solution and projects using best practices for .NET and ASP.NET Core.
