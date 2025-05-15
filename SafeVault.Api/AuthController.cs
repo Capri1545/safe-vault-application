@@ -1,6 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace SafeVault.Api;
 
@@ -9,10 +13,28 @@ namespace SafeVault.Api;
 public class AuthController : ControllerBase
 {
     // This is a placeholder. In production, use a secure user store and hashed passwords.
-    private static readonly Dictionary<string, string> Users = new()
+    private static readonly List<UserRecord> Users = new()
     {
-        { "admin", "password123" }, // Example only
+        new UserRecord
+        {
+            Username = "admin",
+            Password = "password123",
+            Role = "Admin",
+        },
+        new UserRecord
+        {
+            Username = "user1",
+            Password = "userpass",
+            Role = "User",
+        },
     };
+
+    public class UserRecord
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Role { get; set; } = "User";
+    }
 
     public record LoginRequest([Required] string Username, [Required] string Password);
 
@@ -30,21 +52,100 @@ public class AuthController : ControllerBase
         }
 
         // Simulate user lookup and password verification
-        if (
-            Users.TryGetValue(request.Username, out var storedPassword)
-            && storedPassword == request.Password
-        )
+        var user = Users.FirstOrDefault(u =>
+            u.Username == request.Username && u.Password == request.Password
+        );
+        if (user != null)
         {
-            // In production, return a JWT or secure token and set user roles/claims
+            // Generate JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes("SuperSecretKey12345");
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role),
+            };
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                ),
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
             return Ok(
                 new
                 {
-                    Message = "Login successful",
-                    Username = request.Username,
-                    Role = request.Username == "admin" ? "Admin" : "User",
+                    Token = jwtToken,
+                    Username = user.Username,
+                    Role = user.Role,
                 }
             );
         }
         return Unauthorized(new { Message = "Invalid username or password" });
+    }
+
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetUsers()
+    {
+        // Return a list of users (excluding passwords for security)
+        var userList = Users.Select(u => new { u.Username, u.Role }).ToList();
+        return Ok(userList);
+    }
+
+    [HttpPost("add-user")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult AddUser([FromBody] UserRecord newUser)
+    {
+        if (
+            string.IsNullOrWhiteSpace(newUser.Username)
+            || string.IsNullOrWhiteSpace(newUser.Password)
+        )
+        {
+            return BadRequest(new { Message = "Username and password are required." });
+        }
+        if (Users.Any(u => u.Username == newUser.Username))
+        {
+            return Conflict(new { Message = "User already exists." });
+        }
+        Users.Add(
+            new UserRecord
+            {
+                Username = newUser.Username,
+                Password = newUser.Password,
+                Role = newUser.Role ?? "User",
+            }
+        );
+        return Ok(new { Message = "User added successfully." });
+    }
+
+    [HttpDelete("delete-user/{username}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult DeleteUser(string username)
+    {
+        var user = Users.FirstOrDefault(u => u.Username == username);
+        if (user == null)
+        {
+            return NotFound(new { Message = "User not found." });
+        }
+        if (user.Role == "Admin")
+        {
+            return BadRequest(new { Message = "Cannot delete admin user." });
+        }
+        Users.Remove(user);
+        return Ok(new { Message = "User deleted successfully." });
+    }
+
+    [HttpGet("protected")]
+    [Authorize]
+    public IActionResult Protected()
+    {
+        var username = User.Identity?.Name;
+        var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+        return Ok(new { Message = $"Hello, {username}. Your role is {role}." });
     }
 }

@@ -36,6 +36,9 @@ SafeVault is a secure application suite designed to provide web-based and API-ba
 - Restricted access to the administrative tools page by requiring the user to have the 'Admin' role using the [Authorize(Roles = "Admin")] attribute.
 - Added a new Login page (Login.cshtml and Login.cshtml.cs) to the web project, providing a UI for users to log in by calling the API's /api/auth/login endpoint and displaying validation results.
 - Added a Login link to the navigation menu for easy access.
+- Completed JWT authentication setup in `SafeVault.Api/Program.cs` using a symmetric security key and best practices for token validation.
+- Updated `AuthController` in the API to generate and return a JWT token on successful login, including username and role claims.
+- Added a sample protected endpoint (`/api/auth/protected`) that requires JWT authentication and returns the current user's name and role.
 
 ## How AI Has Contributed
 - Guided the setup of the solution and projects using best practices for .NET and ASP.NET Core.
