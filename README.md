@@ -34,6 +34,9 @@ SafeVault is a secure application suite for web-based and API-based management o
 - Home page content now updates based on login state, showing a form only when logged in.
 - Added .http file for direct API endpoint testing for both admin and user roles.
 - Fixed JWT key size and claim parsing for robust authentication and admin detection.
+- Passwords are now securely hashed using bcrypt (BCrypt.Net-Next) in the API. All user creation and login logic uses strong password hashing and verification.
+- Users are assigned roles (e.g., Admin, User) in the API. Role-based access is enforced for protected endpoints and reflected in the UI (e.g., only admins see Admin Tools).
+- Restricted access to specific API routes and features based on user roles (e.g., only admins can manage users). Role-based authorization is enforced using [Authorize(Roles = "Admin")] attributes in the API.
 
 ## How AI Has Contributed
 - Automated project structure setup and best-practice configuration for .NET, ASP.NET Core, and JWT security.
