@@ -1,0 +1,78 @@
+# .gitignore for .NET, Visual Studio, and common tools
+
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test results
+TestResults/
+
+# NuGet
+*.nupkg
+.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Others
+*.dbmdl
+*.dbproj.schemaview
+*.pdb
+*.cache
+*.ide
+*.sdf
+*.opensdf
+*.v12.suo
+*.vsp
+*.vspscc
+*.vssscc
+*.vsmdi
+*.psess
+*.vspx
+*.vsix
+*.docstates
+_ReSharper*/
+[Tt]est[Rr]esult*/
+
+# Azure
+*.azure*
+
+# Rider
+.idea/
+*.sln.iml
+
+# LocalDB
+*.mdf
+*.ldf
+
+# Coverage
+coverage*
+*.coverage
+*.coveragexml
+
+# Others
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+
+# Exclude secrets
+secrets.json
