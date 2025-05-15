@@ -31,6 +31,9 @@ SafeVault is a secure application suite designed to provide web-based and API-ba
 - Added a new Razor Page `AdminTools` (AdminTools.cshtml and AdminTools.cshtml.cs) for administrative tools, allowing management of users, logs, and other admin tasks.
 - Added the SafeVault.Api project to the root solution for unified API and web development.
 - Cleaned up the SafeVault.Api project by removing all default code (weather, counter, etc.) and resetting configuration files to minimal/empty state for a bare minimum API setup.
+- Added authentication and authorization middleware to the SafeVault.Api project to enable robust access control and prevent unauthorized access to sensitive data.
+- Added an AuthController to the API project with a /api/auth/login endpoint that verifies user credentials during login (authentication). This is a placeholder for real authentication logic.
+- Restricted access to the administrative tools page by requiring the user to have the 'Admin' role using the [Authorize(Roles = "Admin")] attribute.
 
 ## How AI Has Contributed
 - Guided the setup of the solution and projects using best practices for .NET and ASP.NET Core.

@@ -13,4 +13,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Add authentication and authorization middleware for robust access control
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.Run();
