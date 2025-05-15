@@ -1,10 +1,11 @@
 # SafeVault Application
 
 ## Summary
-SafeVault is a web-based application designed to provide secure storage and management of sensitive data. The application is built using ASP.NET Core Razor Pages and follows modern web development best practices. The solution includes:
+SafeVault is a secure application suite designed to provide web-based and API-based storage and management of sensitive data. The solution is built using ASP.NET Core Razor Pages for the web interface, a minimal API project for extensibility, and follows modern web development best practices. It includes robust input validation, security-focused unit testing, and administrative tools for management.
 
 - **SafeVault.Web**: The main web project, responsible for the user interface, input validation, and database logic.
 - **SafeVault.Test**: A unit test project using NUnit to ensure code quality, security, and reliability.
+- **SafeVault.Api**: A minimal API project, ready for secure API development and integration.
 
 ## Activity 1: Changes and Updates
 - Created the root solution file: `safe-vault-application.sln`.
@@ -28,6 +29,8 @@ SafeVault is a web-based application designed to provide secure storage and mana
 
 ## Activity 2: Changes and Updates
 - Added a new Razor Page `AdminTools` (AdminTools.cshtml and AdminTools.cshtml.cs) for administrative tools, allowing management of users, logs, and other admin tasks.
+- Added the SafeVault.Api project to the root solution for unified API and web development.
+- Cleaned up the SafeVault.Api project by removing all default code (weather, counter, etc.) and resetting configuration files to minimal/empty state for a bare minimum API setup.
 
 ## How AI Has Contributed
 - Guided the setup of the solution and projects using best practices for .NET and ASP.NET Core.
