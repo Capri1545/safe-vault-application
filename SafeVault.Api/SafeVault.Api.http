@@ -1,1 +1,25 @@
-// This file was removed as part of API project cleanup. No longer needed.
+### Test login endpoint (admin)
+POST http://localhost:5145/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password123"
+}
+
+### Test login endpoint (user)
+POST http://localhost:5145/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "password": "userpass"
+}
+
+### Test protected endpoint (replace <token> with actual JWT)
+GET http://localhost:5145/api/auth/protected
+Authorization: Bearer <token>
+
+### Test users endpoint (admin only, replace <admin_token> with admin JWT)
+GET http://localhost:5145/api/auth/users
+Authorization: Bearer <admin_token>

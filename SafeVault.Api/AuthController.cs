@@ -59,7 +59,7 @@ public class AuthController : ControllerBase
         {
             // Generate JWT token
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes("SuperSecretKey12345");
+            var key = Encoding.UTF8.GetBytes("SuperSecretKey12345SuperSecretKey12345"); // 32 chars = 256 bits
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Username),

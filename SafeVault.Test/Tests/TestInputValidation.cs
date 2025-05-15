@@ -13,10 +13,11 @@ namespace SafeVault.Test.Tests
             // Simulate SQL injection input
             string maliciousInput = "test'; DROP TABLE Users;--";
             string sanitized = InputValidator.Sanitize(maliciousInput);
-            // The sanitized input should not contain SQL injection characters
+            // The sanitized input should not contain SQL injection characters or keywords
             Assert.That(sanitized.Contains("'"), Is.False);
             Assert.That(sanitized.Contains(";"), Is.False);
             Assert.That(sanitized.ToLower().Contains("drop table"), Is.False);
+            // No DB logic is present in the web project; this only tests input sanitization
         }
 
         [Test]
@@ -29,6 +30,7 @@ namespace SafeVault.Test.Tests
             Assert.That(sanitized.Contains("<"), Is.False);
             Assert.That(sanitized.Contains(">"), Is.False);
             Assert.That(sanitized.ToLower().Contains("script"), Is.False);
+            // No DB logic is present in the web project; this only tests input sanitization
         }
     }
 }

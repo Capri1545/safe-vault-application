@@ -3,9 +3,9 @@
 ## Summary
 SafeVault is a secure application suite designed to provide web-based and API-based storage and management of sensitive data. The solution is built using ASP.NET Core Razor Pages for the web interface, a minimal API project for extensibility, and follows modern web development best practices. It includes robust input validation, security-focused unit testing, and administrative tools for management.
 
-- **SafeVault.Web**: The main web project, responsible for the user interface, input validation, and database logic.
+- **SafeVault.Web**: The main web project, responsible for the user interface and input validation.
 - **SafeVault.Test**: A unit test project using NUnit to ensure code quality, security, and reliability.
-- **SafeVault.Api**: A minimal API project, ready for secure API development and integration.
+- **SafeVault.Api**: A minimal API project, responsible for all data/database logic and ready for secure API development and integration.
 
 ## Activity 1: Changes and Updates
 - Created the root solution file: `safe-vault-application.sln`.
@@ -13,13 +13,11 @@ SafeVault is a secure application suite designed to provide web-based and API-ba
 - Added the `SafeVault.Test` project to the solution, enabling unit testing with xUnit.
 - Configured the web project with basic middleware and routing in `Program.cs`.
 - Replaced the default Index page with a custom web form for username and email submission in `Index.cshtml`.
-- Added a LocalDB connection string to `appsettings.json` for database connectivity.
-- Implemented a `DatabaseInitializer` class to automatically create the SafeVaultDb database and Users table if they do not exist.
-- Added the Microsoft.Data.SqlClient NuGet package to the SafeVault.Web project for SQL Server database access.
-- Moved the Users table creation SQL to a separate `database.sql` file in `SafeVault.Web/Data` for easier future changes.
-- Updated the `DatabaseInitializer` to read and execute the SQL from this file when initializing the database.
-- Added an AddUser method to DatabaseInitializer that uses parameterized queries for inserting user data, following best practices to prevent SQL injection.
-- Updated AddUser in DatabaseInitializer to sanitize and validate user-provided data (such as login credentials or search inputs) before database insertion, ensuring secure handling of sensitive information.
+- (Removed) LocalDB connection string from web `appsettings.json` (now only in API).
+- (Removed) `DatabaseInitializer` and all data logic from the web project. Data/database logic is now handled exclusively by the API.
+- (Removed) Microsoft.Data.SqlClient NuGet package from the web project (now only in API).
+- (Removed) Users table creation SQL and related files from the web project. These are now in the API project.
+- (Removed) AddUser and all direct DB access from the web project. All user/data operations are now performed via the API.
 - Added a new test file `Tests/TestInputValidation.cs` with unit tests for SQL Injection and XSS input validation using NUnit.
 - Added an `InputValidator` class in `SafeVault.Web/Model` to sanitize user input and validate email addresses, helping to prevent users from entering potentially harmful scripts or queries (such as SQL injection or XSS).
 - Updated the InputValidator.Sanitize method to also remove the phrase 'drop table' (case-insensitive), ensuring it passes the SQL injection test cases and further improves input sanitization.

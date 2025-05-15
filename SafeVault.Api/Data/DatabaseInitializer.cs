@@ -3,16 +3,21 @@ using System.IO;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
-namespace SafeVault.Web.Data
+namespace SafeVault.Api.Data
 {
-    public class DatabaseInitializer(IConfiguration configuration)
+    public class DatabaseInitializer
     {
-        private readonly string _connectionString =
-            configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException(
-                "Connection string 'DefaultConnection' not found."
-            );
+        private readonly string _connectionString;
         private readonly string _databaseName = "SafeVaultDb";
+
+        public DatabaseInitializer(IConfiguration configuration)
+        {
+            _connectionString =
+                configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' not found."
+                );
+        }
 
         public void Initialize()
         {
@@ -38,11 +43,18 @@ namespace SafeVault.Web.Data
             var builder = new SqlConnectionStringBuilder(_connectionString);
             using var connection = new SqlConnection(builder.ConnectionString);
             connection.Open();
+            // Look for database.sql in the project source directory, not the bin directory
             string sqlFilePath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
+                AppContext.BaseDirectory,
+                "..",
+                "..",
+                "..",
                 "Data",
                 "database.sql"
             );
+            sqlFilePath = Path.GetFullPath(sqlFilePath);
+            if (!File.Exists(sqlFilePath))
+                throw new FileNotFoundException($"Could not find database.sql at {sqlFilePath}");
             string createTableSql = File.ReadAllText(sqlFilePath);
             using var command = connection.CreateCommand();
             command.CommandText =
@@ -54,12 +66,7 @@ namespace SafeVault.Web.Data
 
         public void AddUser(string username, string email)
         {
-            // Sanitize inputs before using them in the query
-            username = Model.InputValidator.Sanitize(username);
-            email = Model.InputValidator.Sanitize(email);
-            if (!Model.InputValidator.IsValidEmail(email))
-                throw new ArgumentException("Invalid email format.");
-
+            // TODO: Add input validation or sanitization if needed
             var builder = new SqlConnectionStringBuilder(_connectionString);
             using var connection = new SqlConnection(builder.ConnectionString);
             connection.Open();

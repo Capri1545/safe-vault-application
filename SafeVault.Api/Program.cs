@@ -1,8 +1,25 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SafeVault.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add CORS policy for local development
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
+// Initialize database on API startup
+var configuration = builder.Configuration;
+var dbInitializer = new DatabaseInitializer(configuration);
+dbInitializer.Initialize();
 
 // Add services to the container.
 builder.Services.AddAuthorization();
@@ -17,10 +34,13 @@ builder
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("SuperSecretKey12345")
+                Encoding.UTF8.GetBytes("SuperSecretKey12345SuperSecretKey12345")
             ),
         };
     });
+
+// Add controllers support
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -34,5 +54,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
+
+// Map controller endpoints
+app.MapControllers();
 
 app.Run();
