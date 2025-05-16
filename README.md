@@ -38,6 +38,23 @@ SafeVault is a secure application suite for web-based and API-based management o
 - Users are assigned roles (e.g., Admin, User) in the API. Role-based access is enforced for protected endpoints and reflected in the UI (e.g., only admins see Admin Tools).
 - Restricted access to specific API routes and features based on user roles (e.g., only admins can manage users). Role-based authorization is enforced using [Authorize(Roles = "Admin")] attributes in the API.
 
+## Activity 3: Changes and Updates
+- Refactored API to use the database for all user CRUD operations (no more in-memory user list).
+- Users table schema updated to include Password, Role, and Email columns.
+- All user creation and listing (including email) now persist to and read from the database.
+- On database initialization, a default admin user (username: admin, password: admin) is created if not present.
+- AdminTools web page now lists all users with username, email, and role.
+- AdminTools web page allows deleting users (except those with the Admin role) via the UI and API.
+- API endpoint for deleting users prevents deletion of admin users.
+- All user management actions (add, list, delete) are now fully database-backed and secure.
+- **Security improvement:** User data is now sanitized before being inserted into the DOM in the web UI to prevent XSS attacks from malicious usernames or emails.
+- **Vulnerability review:**
+    - All SQL queries use parameterized commands; no unsafe string concatenation is present (SQL injection is mitigated).
+    - Input validation and sanitization are enforced in both backend and frontend.
+    - User-supplied data is escaped before DOM insertion to prevent XSS.
+- **Automated security tests:**
+    - Added `TestSecurityAttacks.cs` (NUnit) to simulate SQL injection and XSS attacks against the API and web forms. These tests ensure the application is resilient to common web security threats and that malicious input does not compromise the system or user experience.
+
 ## How AI Has Contributed
 - Automated project structure setup and best-practice configuration for .NET, ASP.NET Core, and JWT security.
 - Generated and refactored code for input validation, authentication, and dynamic UI updates.

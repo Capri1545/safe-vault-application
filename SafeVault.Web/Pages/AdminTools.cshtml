@@ -9,6 +9,8 @@
         <tr>
             <th>Username</th>
             <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -36,6 +38,10 @@
                     tr.innerHTML = `
                         <td>${user.username}</td>
                         <td>${user.email ? user.email : ''}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            ${user.role !== 'Admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteUser('${user.username}')">Delete</button>` : ''}
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -44,6 +50,27 @@
             }
         } catch (err) {
             document.getElementById('usersError').textContent = 'Error connecting to API.';
+        }
+    }
+
+    async function deleteUser(username) {
+        if (!confirm('Are you sure you want to delete user ' + username + '?')) return;
+        const jwt = localStorage.getItem('jwtToken');
+        try {
+            const response = await fetch(`http://localhost:5145/api/auth/delete-user/${encodeURIComponent(username)}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + jwt
+                }
+            });
+            if (response.ok) {
+                loadUsers();
+            } else {
+                const result = await response.json();
+                alert(result.Message || 'Failed to delete user.');
+            }
+        } catch (err) {
+            alert('Error connecting to API.');
         }
     }
     document.addEventListener('DOMContentLoaded', loadUsers);
