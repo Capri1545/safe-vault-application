@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace SafeVault.Web.Model
+namespace SafeVault.Common
 {
     public static class InputValidator
     {
@@ -15,6 +15,14 @@ namespace SafeVault.Web.Model
             sanitized = Regex.Replace(sanitized, "(?i)drop table", string.Empty); // Remove 'drop table' case-insensitive
             // Remove script tags (case-insensitive)
             sanitized = Regex.Replace(sanitized, "(?i)script", string.Empty); // Remove 'script' case-insensitive
+            // Remove event handlers and javascript: and img tags
+            sanitized = Regex.Replace(
+                sanitized,
+                "(?i)onerror|onload|alert|img|javascript:",
+                string.Empty
+            );
+            // Remove any HTML tags
+            sanitized = Regex.Replace(sanitized, "<.*?>", string.Empty); // Remove all HTML tags
             sanitized = sanitized.Trim();
             return sanitized;
         }

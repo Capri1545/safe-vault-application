@@ -90,7 +90,7 @@ namespace SafeVault.Test.Tests
                 username = "testuser_db",
                 password = "Test123!",
                 role = "User",
-                email = "testuser_db@example.com"
+                email = "testuser_db@example.com",
             };
             var addResp = await _client.PostAsJsonAsync(_apiBase + "/add-user", newUser);
             Assert.That(addResp.StatusCode, Is.EqualTo(HttpStatusCode.OK), "User creation failed");
@@ -140,7 +140,7 @@ namespace SafeVault.Test.Tests
                 username = "testuser_forbidden",
                 password = "Test123!",
                 role = "User",
-                email = "testuser_forbidden@example.com"
+                email = "testuser_forbidden@example.com",
             };
             var addResp = await _client.PostAsJsonAsync(_apiBase + "/add-user", newUser);
             Assert.That(addResp.StatusCode, Is.EqualTo(HttpStatusCode.OK), "User creation failed");
@@ -154,7 +154,10 @@ namespace SafeVault.Test.Tests
             var userLoginResult = await userLogin.Content.ReadFromJsonAsync<LoginResult>();
             Assert.That(userLoginResult, Is.Not.Null, "User login result should not be null");
             userClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", userLoginResult!.Token);
+                new System.Net.Http.Headers.AuthenticationHeaderValue(
+                    "Bearer",
+                    userLoginResult!.Token
+                );
 
             // Attempt to access admin endpoint as user
             var forbiddenResp = await userClient.GetAsync(_apiBase + "/users");

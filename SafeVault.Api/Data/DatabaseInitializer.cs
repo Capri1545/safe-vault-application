@@ -132,6 +132,15 @@ namespace SafeVault.Api.Data
 
         public void AddUser(string username, string password, string role, string email)
         {
+            // Use shared InputValidator for all input sanitization
+            username = SafeVault.Common.InputValidator.Sanitize(username);
+            email = SafeVault.Common.InputValidator.Sanitize(email);
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Username and password are required.");
+            if (
+                !string.IsNullOrEmpty(email) && !SafeVault.Common.InputValidator.IsValidEmail(email)
+            )
+                throw new ArgumentException("Invalid email address.");
             var builder = new SqlConnectionStringBuilder(_connectionString);
             using var connection = new SqlConnection(builder.ConnectionString);
             connection.Open();

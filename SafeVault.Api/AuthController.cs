@@ -2,10 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SafeVault.Api.Data;
+using SafeVault.Common;
 
 namespace SafeVault.Api
 {
@@ -102,17 +104,65 @@ namespace SafeVault.Api
                 || string.IsNullOrWhiteSpace(newUser.Password)
             )
                 return BadRequest(new { Message = "Username and password are required." });
-            if (_db.GetUserByUsername(newUser.Username) != null)
+
+            // Use shared InputValidator for XSS/SQLi and HTML tag sanitization
+            if (
+                !InputValidator.IsValidEmail(newUser.Email ?? string.Empty)
+                && !string.IsNullOrEmpty(newUser.Email)
+            )
+            {
+                return BadRequest(new { Message = "Invalid email address." });
+            }
+            if (!IsSafeInput(newUser.Username) || !IsSafeInput(newUser.Email))
+            {
+                return BadRequest(
+                    new { Message = "Username or email contains invalid or unsafe characters." }
+                );
+            }
+
+            if (_db.GetUserByUsername(newUser.Username ?? string.Empty) != null)
                 return Conflict(new { Message = "User already exists." });
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
-            _db.AddUser(newUser.Username, hashedPassword, newUser.Role ?? "User", newUser.Email);
+            _db.AddUser(
+                newUser.Username ?? string.Empty,
+                hashedPassword,
+                newUser.Role ?? "User",
+                newUser.Email ?? string.Empty
+            );
             return Ok(new { Message = "User added successfully." });
+        }
+
+        private bool IsSafeInput(string? input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return true;
+            var sanitized = InputValidator.Sanitize(input);
+            if (sanitized != input)
+                return false;
+            // Block any HTML tags or common XSS patterns
+            if (
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    input,
+                    "<.*?>|script|onerror|onload|alert|img",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                )
+            )
+                return false;
+            return true;
         }
 
         [HttpDelete("delete-user/{username}")]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(string username)
         {
+            // Sanitize username to prevent XSS/SQLi
+            var sanitizedUsername = InputValidator.Sanitize(username);
+            if (sanitizedUsername != username)
+            {
+                return BadRequest(
+                    new { Message = "Username contains invalid or unsafe characters." }
+                );
+            }
             var user = _db.GetUserByUsername(username);
             if (user == null)
             {

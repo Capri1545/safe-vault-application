@@ -54,6 +54,13 @@ SafeVault is a secure application suite for web-based and API-based management o
     - User-supplied data is escaped before DOM insertion to prevent XSS.
 - **Automated security tests:**
     - Added `TestSecurityAttacks.cs` (NUnit) to simulate SQL injection and XSS attacks against the API and web forms. These tests ensure the application is resilient to common web security threats and that malicious input does not compromise the system or user experience.
+- **Shared validation logic:**
+    - Created a new `SafeVault.Common` shared library containing `InputValidator` for input sanitization and email validation.
+    - Both the API and Web projects now use the same input validation logic for consistent security.
+- The local `InputValidator` in `SafeVault.Web/Model` has been fully deprecated and replaced with a stub. All input validation logic is now centralized in `SafeVault.Common/InputValidator.cs`.
+- All usages in the web and API projects must reference `SafeVault.Common.InputValidator` for input sanitization and email validation.
+- The obsolete file in the web project now only contains stub methods and clear comments instructing developers to migrate to the shared validator.
+- This ensures consistent, secure validation logic across all layers and eliminates code duplication.
 
 ## How AI Has Contributed
 - Automated project structure setup and best-practice configuration for .NET, ASP.NET Core, and JWT security.

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafeVault.Test", "SafeVault
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafeVault.Api", "SafeVault.Api\SafeVault.Api.csproj", "{FA524484-63E7-455C-B587-7F927DCE9C71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SafeVault.Common", "SafeVault.Common\SafeVault.Common.csproj", "{800D2997-9C89-43DD-B15B-CB0D65057B3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{FA524484-63E7-455C-B587-7F927DCE9C71}.Release|x64.Build.0 = Release|Any CPU
 		{FA524484-63E7-455C-B587-7F927DCE9C71}.Release|x86.ActiveCfg = Release|Any CPU
 		{FA524484-63E7-455C-B587-7F927DCE9C71}.Release|x86.Build.0 = Release|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Debug|x64.Build.0 = Debug|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Debug|x86.Build.0 = Debug|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Release|x64.ActiveCfg = Release|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Release|x64.Build.0 = Release|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Release|x86.ActiveCfg = Release|Any CPU
+		{800D2997-9C89-43DD-B15B-CB0D65057B3D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

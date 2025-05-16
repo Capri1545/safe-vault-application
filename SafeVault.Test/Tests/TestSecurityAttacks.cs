@@ -64,6 +64,21 @@ namespace SafeVault.Test.Tests
                 Is.Not.EqualTo(System.Net.HttpStatusCode.InternalServerError),
                 "SQL injection caused server error"
             );
+            Assert.That(
+                response.IsSuccessStatusCode,
+                Is.False,
+                "Malicious user creation should not succeed!"
+            );
+            // Now check that the user was NOT added to the database
+            var usersRequest = new HttpRequestMessage(HttpMethod.Get, _apiBase + "/users");
+            usersRequest.Headers.Add("Authorization", "Bearer " + jwt);
+            var usersResponse = await _client!.SendAsync(usersRequest);
+            var usersJson = await usersResponse.Content.ReadAsStringAsync();
+            Assert.That(
+                usersJson,
+                Does.Not.Contain(username),
+                $"Malicious user '{username}' was inserted into the database!"
+            );
         }
 
         [TestCase("<script>alert('xss')</script>", "xss@example.com")]
@@ -92,7 +107,21 @@ namespace SafeVault.Test.Tests
                 Is.Not.EqualTo(System.Net.HttpStatusCode.InternalServerError),
                 "XSS input caused server error"
             );
-            // Optionally, fetch users and check that output is sanitized (manual/visual check in UI)
+            Assert.That(
+                response.IsSuccessStatusCode,
+                Is.False,
+                "Malicious user creation (XSS) should not succeed!"
+            );
+            // Now check that the user was NOT added to the database
+            var usersRequest = new HttpRequestMessage(HttpMethod.Get, _apiBase + "/users");
+            usersRequest.Headers.Add("Authorization", "Bearer " + jwt);
+            var usersResponse = await _client!.SendAsync(usersRequest);
+            var usersJson = await usersResponse.Content.ReadAsStringAsync();
+            Assert.That(
+                usersJson,
+                Does.Not.Contain(username),
+                $"Malicious user '{username}' was inserted into the database!"
+            );
         }
 
         private class LoginResult

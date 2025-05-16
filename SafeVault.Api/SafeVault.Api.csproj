@@ -10,4 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SafeVault.Common\SafeVault.Common.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using SafeVault.Web.Model;
+using SafeVault.Common;
 using static NUnit.Framework.Assert;
 
 namespace SafeVault.Test.Tests
