@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SafeVault.Api.Data;
 
 namespace SafeVault.Api
 {
@@ -12,28 +13,21 @@ namespace SafeVault.Api
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        // This is a placeholder. In production, use a secure user store and hashed passwords.
-        private static readonly List<UserRecord> Users = new()
+        private readonly DatabaseInitializer _db;
+        private readonly IConfiguration _config;
+
+        public AuthController(DatabaseInitializer db, IConfiguration config)
         {
-            new UserRecord
-            {
-                Username = "admin",
-                Password = BCrypt.Net.BCrypt.HashPassword("password123"),
-                Role = "Admin",
-            },
-            new UserRecord
-            {
-                Username = "user1",
-                Password = BCrypt.Net.BCrypt.HashPassword("userpass"),
-                Role = "User",
-            },
-        };
+            _db = db;
+            _config = config;
+        }
 
         public class UserRecord
         {
             public string Username { get; set; } = string.Empty;
             public string Password { get; set; } = string.Empty;
             public string Role { get; set; } = "User";
+            public string Email { get; set; } = string.Empty;
         }
 
         public record LoginRequest([Required] string Username, [Required] string Password);
@@ -42,17 +36,14 @@ namespace SafeVault.Api
         [AllowAnonymous]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            // Basic input validation
             if (
                 string.IsNullOrWhiteSpace(request.Username)
                 || string.IsNullOrWhiteSpace(request.Password)
             )
-            {
                 return BadRequest(new { Message = "Username and password are required." });
-            }
 
-            // Simulate user lookup and password verification
-            var user = Users.FirstOrDefault(u => u.Username == request.Username);
+            // Look up user from DB
+            var user = _db.GetUserByUsername(request.Username);
             if (user != null && BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
                 // Generate JWT token
@@ -90,8 +81,15 @@ namespace SafeVault.Api
         [Authorize(Roles = "Admin")]
         public IActionResult GetUsers()
         {
-            // Return a list of users (excluding passwords for security)
-            var userList = Users.Select(u => new { u.Username, u.Role }).ToList();
+            var users = _db.GetAllUsers();
+            var userList = users
+                .Select(u => new
+                {
+                    username = u.Username,
+                    email = u.Email,
+                    role = u.Role,
+                })
+                .ToList();
             return Ok(userList);
         }
 
@@ -103,21 +101,11 @@ namespace SafeVault.Api
                 string.IsNullOrWhiteSpace(newUser.Username)
                 || string.IsNullOrWhiteSpace(newUser.Password)
             )
-            {
                 return BadRequest(new { Message = "Username and password are required." });
-            }
-            if (Users.Any(u => u.Username == newUser.Username))
-            {
+            if (_db.GetUserByUsername(newUser.Username) != null)
                 return Conflict(new { Message = "User already exists." });
-            }
-            Users.Add(
-                new UserRecord
-                {
-                    Username = newUser.Username,
-                    Password = BCrypt.Net.BCrypt.HashPassword(newUser.Password),
-                    Role = newUser.Role ?? "User",
-                }
-            );
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
+            _db.AddUser(newUser.Username, hashedPassword, newUser.Role ?? "User", newUser.Email);
             return Ok(new { Message = "User added successfully." });
         }
 
@@ -125,7 +113,7 @@ namespace SafeVault.Api
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(string username)
         {
-            var user = Users.FirstOrDefault(u => u.Username == username);
+            var user = _db.GetUserByUsername(username);
             if (user == null)
             {
                 return NotFound(new { Message = "User not found." });
@@ -134,7 +122,7 @@ namespace SafeVault.Api
             {
                 return BadRequest(new { Message = "Cannot delete admin user." });
             }
-            Users.Remove(user);
+            _db.DeleteUser(username);
             return Ok(new { Message = "User deleted successfully." });
         }
 

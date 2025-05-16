@@ -5,7 +5,7 @@ SafeVault is a secure application suite for web-based and API-based management o
 
 - **SafeVault.Web**: User interface, input validation, and authentication state management.
 - **SafeVault.Api**: All data/database logic, authentication, authorization, and user/role management.
-- **SafeVault.Test**: Unit tests for input validation and security.
+- **SafeVault.Test**: Unit tests for input validation, security, and API access control.
 
 ## Activity 1: Changes and Updates
 - Created the root solution file: `safe-vault-application.sln`.
@@ -44,6 +44,7 @@ SafeVault is a secure application suite for web-based and API-based management o
 - Provided step-by-step guidance for moving all data logic to the API and securing endpoints.
 - Automated the addition of CORS, controller mapping, and JWT role parsing for seamless integration.
 - Created and updated .http test files for API endpoint validation.
+- Wrote and updated unit and integration tests for input validation, authentication, and access control (including invalid login and role-based access scenarios).
 - Ensured all documentation and code changes reflect the current, secure architecture.
 
 ---

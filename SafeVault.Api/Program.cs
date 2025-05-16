@@ -20,6 +20,7 @@ builder.Services.AddCors(options =>
 var configuration = builder.Configuration;
 var dbInitializer = new DatabaseInitializer(configuration);
 dbInitializer.Initialize();
+builder.Services.AddSingleton<DatabaseInitializer>(dbInitializer);
 
 // Add services to the container.
 builder.Services.AddAuthorization();

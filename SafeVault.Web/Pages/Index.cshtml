@@ -26,7 +26,27 @@
 `;
                 document.getElementById('userForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    document.getElementById('userFormResult').innerHTML = '<div class="alert alert-success">Submitted!</div>';
+                    const username = document.getElementById('username').value;
+                    const email = document.getElementById('email').value;
+                    const jwt = localStorage.getItem('jwtToken');
+                    try {
+                        const response = await fetch('http://localhost:5145/api/auth/add-user', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + jwt
+                            },
+                            body: JSON.stringify({ username: username, password: 'defaultpass', role: 'User', email: email })
+                        });
+                        if (response.ok) {
+                            document.getElementById('userFormResult').innerHTML = '<div class="alert alert-success">User added!</div>';
+                        } else {
+                            const result = await response.json();
+                            document.getElementById('userFormResult').innerHTML = `<div class="alert alert-danger">${result.Message || 'Failed to add user.'}</div>`;
+                        }
+                    } catch (err) {
+                        document.getElementById('userFormResult').innerHTML = '<div class="alert alert-danger">Error connecting to API.</div>';
+                    }
                 });
             }
         }

@@ -3,4 +3,49 @@
 
 <h2>Administrative Tools</h2>
 <p>Welcome to the administrative tools page. Here you can manage users, view logs, and perform other admin tasks.</p>
-<!-- Add more admin features as needed -->
+
+<table class="table" id="usersTable">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- User rows will be populated by JavaScript -->
+    </tbody>
+</table>
+<div id="usersError" class="text-danger"></div>
+
+@section Scripts {
+<script type="text/javascript">
+    async function loadUsers() {
+        const jwt = localStorage.getItem('jwtToken');
+        try {
+            const response = await fetch('http://localhost:5145/api/auth/users', {
+                headers: {
+                    'Authorization': 'Bearer ' + jwt
+                }
+            });
+            if (response.ok) {
+                const users = await response.json();
+                const tbody = document.querySelector('#usersTable tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>${user.email ? user.email : ''}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                document.getElementById('usersError').textContent = 'Failed to load users.';
+            }
+        } catch (err) {
+            document.getElementById('usersError').textContent = 'Error connecting to API.';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', loadUsers);
+</script>
+}

@@ -23,6 +23,7 @@ namespace SafeVault.Api.Data
         {
             EnsureDatabaseExists();
             EnsureUsersTableExists();
+            EnsureDefaultAdminUser();
         }
 
         private void EnsureDatabaseExists()
@@ -64,16 +65,94 @@ namespace SafeVault.Api.Data
             command.ExecuteNonQuery();
         }
 
-        public void AddUser(string username, string email)
+        private void EnsureDefaultAdminUser()
         {
-            // TODO: Add input validation or sanitization if needed
+            var admin = GetUserByUsername("admin");
+            if (admin == null)
+            {
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword("admin");
+                AddUser("admin", hashedPassword, "Admin", "");
+            }
+        }
+
+        public class DbUser
+        {
+            public string Username { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+            public string Role { get; set; } = "User";
+            public string Email { get; set; } = string.Empty;
+        }
+
+        public DbUser? GetUserByUsername(string username)
+        {
             var builder = new SqlConnectionStringBuilder(_connectionString);
             using var connection = new SqlConnection(builder.ConnectionString);
             connection.Open();
             using var command = connection.CreateCommand();
-            command.CommandText = "INSERT INTO Users (Username, Email) VALUES (@Username, @Email)";
+            command.CommandText =
+                "SELECT Username, Password, Role, Email FROM Users WHERE Username = @Username";
             command.Parameters.AddWithValue("@Username", username);
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                return new DbUser
+                {
+                    Username = reader["Username"] as string ?? string.Empty,
+                    Password = reader["Password"] as string ?? string.Empty,
+                    Role = reader["Role"] as string ?? "User",
+                    Email = reader["Email"] as string ?? string.Empty,
+                };
+            }
+            return null;
+        }
+
+        public List<DbUser> GetAllUsers()
+        {
+            var users = new List<DbUser>();
+            var builder = new SqlConnectionStringBuilder(_connectionString);
+            using var connection = new SqlConnection(builder.ConnectionString);
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT Username, Password, Role, Email FROM Users";
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                users.Add(
+                    new DbUser
+                    {
+                        Username = reader["Username"] as string ?? string.Empty,
+                        Password = reader["Password"] as string ?? string.Empty,
+                        Role = reader["Role"] as string ?? "User",
+                        Email = reader["Email"] as string ?? string.Empty,
+                    }
+                );
+            }
+            return users;
+        }
+
+        public void AddUser(string username, string password, string role, string email)
+        {
+            var builder = new SqlConnectionStringBuilder(_connectionString);
+            using var connection = new SqlConnection(builder.ConnectionString);
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText =
+                "INSERT INTO Users (Username, Password, Role, Email) VALUES (@Username, @Password, @Role, @Email)";
+            command.Parameters.AddWithValue("@Username", username);
+            command.Parameters.AddWithValue("@Password", password);
+            command.Parameters.AddWithValue("@Role", role);
             command.Parameters.AddWithValue("@Email", email);
+            command.ExecuteNonQuery();
+        }
+
+        public void DeleteUser(string username)
+        {
+            var builder = new SqlConnectionStringBuilder(_connectionString);
+            using var connection = new SqlConnection(builder.ConnectionString);
+            connection.Open();
+            using var command = connection.CreateCommand();
+            command.CommandText = "DELETE FROM Users WHERE Username = @Username";
+            command.Parameters.AddWithValue("@Username", username);
             command.ExecuteNonQuery();
         }
     }
