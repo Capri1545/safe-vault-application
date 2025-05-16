@@ -48,7 +48,7 @@ namespace SafeVault.Test.Tests
                 username = username,
                 password = "Test123!",
                 role = "User",
-                email = email
+                email = email,
             };
             var content = new StringContent(
                 JsonConvert.SerializeObject(payload),
@@ -76,7 +76,7 @@ namespace SafeVault.Test.Tests
                 username = username,
                 password = "Test123!",
                 role = "User",
-                email = email
+                email = email,
             };
             var content = new StringContent(
                 JsonConvert.SerializeObject(payload),
