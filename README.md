@@ -62,14 +62,23 @@ SafeVault is a secure application suite for web-based and API-based management o
 - The obsolete file in the web project now only contains stub methods and clear comments instructing developers to migrate to the shared validator.
 - This ensures consistent, secure validation logic across all layers and eliminates code duplication.
 
-## How AI Has Contributed
-- Automated project structure setup and best-practice configuration for .NET, ASP.NET Core, and JWT security.
-- Generated and refactored code for input validation, authentication, and dynamic UI updates.
-- Provided step-by-step guidance for moving all data logic to the API and securing endpoints.
-- Automated the addition of CORS, controller mapping, and JWT role parsing for seamless integration.
-- Created and updated .http test files for API endpoint validation.
-- Wrote and updated unit and integration tests for input validation, authentication, and access control (including invalid login and role-based access scenarios).
-- Ensured all documentation and code changes reflect the current, secure architecture.
+## Security Vulnerabilities Identified and Fixes Applied
+
+### Vulnerabilities Identified
+- **SQL Injection:** The API previously allowed unsanitized input for usernames and emails, which could be exploited for SQL injection attacks.
+- **Cross-Site Scripting (XSS):** The application was vulnerable to XSS payloads in usernames and emails, such as `<script>`, `<img onerror=...>`, and event handler attributes, which could be stored in the database and executed in the UI.
+
+### Fixes Applied
+- **Centralized Input Validation:** All input validation and sanitization logic was moved to a shared `SafeVault.Common.InputValidator` class, ensuring consistent protection across both the API and Web projects.
+- **Sanitization Enhancements:** The sanitizer now removes SQL injection characters, keywords, HTML tags, script tags, and common XSS vectors (e.g., `onerror`, `onload`, `img`, `alert`, `javascript:`) from all user input.
+- **API Enforcement:** The API's AddUser endpoint and database logic now strictly use the shared validator, blocking any unsafe or malformed input before it reaches the database.
+- **Automated Security Testing:** Comprehensive automated tests were added to simulate SQL injection and XSS attacks, ensuring that malicious input is rejected and not stored in the database.
+
+### How Copilot Assisted
+- **Vulnerability Detection:** Copilot identified the lack of input sanitization and the risk of SQL injection and XSS in the original implementation.
+- **Code Refactoring:** Copilot automated the migration of validation logic to a shared library and updated all relevant API and database code to use the new validator.
+- **Test-Driven Debugging:** Copilot iteratively ran and analyzed security tests, pinpointed failures, and suggested targeted code changes until all vulnerabilities were mitigated and tests passed.
+- **Documentation:** Copilot updated the README to clearly summarize the vulnerabilities, the applied fixes, and the collaborative debugging process.
 
 ---
 This README will be updated as the project evolves and new features or changes are introduced.
